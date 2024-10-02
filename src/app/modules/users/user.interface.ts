@@ -5,9 +5,11 @@ export const userRole = {
 } as const;
 
 export type TUser = {
+  _id?: string;
   name: string;
   email: string;
   role: "user" | "admin";
+  status: "free" | "premium";
   password: string;
   profilePicture: string;
 };

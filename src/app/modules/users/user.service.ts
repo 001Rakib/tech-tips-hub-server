@@ -13,32 +13,16 @@ const signUpUserIntoDB = async (payload: TUser) => {
     throw new AppError(httpStatus.BAD_REQUEST, "User already registered!!");
   }
 
-  //set user role
-  payload.role = "user";
-
   const result = await User.create(payload);
-  return result;
-};
-
-const signInUser = async (payload: TSignInUser) => {
-  //checking if the user is registered in the DB
-  const userData = await User.isUserExistsByEmail(payload.email);
-
-  if (!userData) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found");
-  }
-
-  //check if the password matched
-  if (!(await User.isPasswordMatched(payload?.password, userData?.password))) {
-    throw new AppError(httpStatus.FORBIDDEN, "Wrong Password");
-  }
-
-  await User.findOne({ email: payload.email });
 
   //create token and send to the client
   const jwtPayload = {
-    email: userData?.email,
-    role: userData?.role,
+    _id: result?._id,
+    email: result?.email,
+    role: result?.role,
+    name: result?.name,
+    status: result?.status,
+    profilePicture: result?.profilePicture,
   };
 
   const accessToken = createToken(
@@ -53,7 +37,49 @@ const signInUser = async (payload: TSignInUser) => {
   );
 
   return {
-    token: accessToken,
+    accessToken,
+    refreshToken,
+  };
+};
+
+const signInUser = async (payload: TSignInUser) => {
+  // checking if the user is exist
+  const user = await User.isUserExistsByEmail(payload?.email);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "This user is not found!");
+  }
+
+  //checking if the password is correct
+
+  if (!(await User.isPasswordMatched(payload?.password, user?.password)))
+    throw new AppError(httpStatus.FORBIDDEN, "Password do not matched");
+
+  //create token and sent to the  client
+
+  const jwtPayload = {
+    _id: user?._id,
+    email: user?.email,
+    role: user?.role,
+    name: user?.name,
+    status: user?.status,
+    profilePicture: user?.profilePicture,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_token as string,
+    config.jwt_access_expires_in as string
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_token as string,
+    config.jwt_refresh_expired_in as string
+  );
+
+  return {
+    accessToken,
     refreshToken,
   };
 };
@@ -85,8 +111,12 @@ const refreshToken = async (token: string) => {
 
   //create
   const jwtPayload = {
+    _id: userData?._id,
     email: userData?.email,
     role: userData?.role,
+    name: userData?.name,
+    status: userData?.status,
+    profilePicture: userData?.profilePicture,
   };
 
   const accessToken = createToken(

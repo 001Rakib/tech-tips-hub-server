@@ -14,6 +14,12 @@ const userSchema = new Schema<TUser, UserModel>(
       enum: ["user", "admin"],
       default: "user",
     },
+    status: {
+      type: String,
+      required: true,
+      enum: ["free", "premium"],
+      default: "free",
+    },
     password: { type: String, required: true, select: 0 },
     profilePicture: { type: String },
   },
