@@ -2,7 +2,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { User } from "../users/user.model";
 import { TBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
-import { Car } from "../car/car.model";
+import { Car } from "../posts/post.model";
 
 const getAllBookings = async (query: Record<string, unknown>) => {
   let date = "";

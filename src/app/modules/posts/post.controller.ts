@@ -1,20 +1,20 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { carServices } from "./car.service";
+import { postServices } from "./post.service";
 
-const createCar = catchAsync(async (req, res) => {
-  const result = await carServices.createCarIntoDB(req.body);
+const createPost = catchAsync(async (req, res) => {
+  const result = await postServices.createPostIntoDB(req.body);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "Car created successfully",
+    message: "Post created successfully",
     data: result,
   });
 });
 
-const getAllCar = catchAsync(async (req, res) => {
-  const result = await carServices.getAllCarFromDB(req.query);
+const getAllPost = catchAsync(async (req, res) => {
+  const result = await postServices.getAllPostFromDB(req.query);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -24,7 +24,7 @@ const getAllCar = catchAsync(async (req, res) => {
 });
 const getSingleCar = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await carServices.getSingleCarFromDB(id);
+  const result = await postServices.getSingleCarFromDB(id);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -33,19 +33,9 @@ const getSingleCar = catchAsync(async (req, res) => {
   });
 });
 
-const returnCar = catchAsync(async (req, res) => {
-  const result = await carServices.returnCar(req.body);
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: "Car returned successfully",
-    data: result,
-  });
-});
-
 const updateCar = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await carServices.updateCarIntoDB(id, req.body);
+  const result = await postServices.updateCarIntoDB(id, req.body);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -55,7 +45,7 @@ const updateCar = catchAsync(async (req, res) => {
 });
 const deleteCar = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await carServices.deleteCarFromDB(id);
+  const result = await postServices.deleteCarFromDB(id);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -64,11 +54,10 @@ const deleteCar = catchAsync(async (req, res) => {
   });
 });
 
-export const carControllers = {
-  createCar,
-  getAllCar,
+export const postControllers = {
+  createPost,
+  getAllPost,
   getSingleCar,
   deleteCar,
   updateCar,
-  returnCar,
 };
