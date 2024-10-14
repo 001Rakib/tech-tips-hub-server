@@ -1,16 +1,19 @@
 import httpStatus from "http-status";
 import AppError from "../../error/AppError";
-import { TSignInUser, TUser } from "./user.interface";
-import { User } from "./user.model";
 import { createToken } from "../auth/auth.utils";
 import config from "../../config";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import User from "./user.model";
+import { TSignInUser, TUser } from "./user.interface";
+import bcrypt from "bcrypt";
 
+//register user
 const signUpUserIntoDB = async (payload: TUser) => {
-  //check if the user is already registered
-  const isUserExists = await User.isUserExistsByEmail(payload.email);
-  if (isUserExists) {
-    throw new AppError(httpStatus.BAD_REQUEST, "User already registered!!");
+  // Check if email or username already exists in one query
+  const userExist = await User.findOne({ email: payload.email });
+
+  if (userExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "This user is Already Registered");
   }
 
   const result = await User.create(payload);
@@ -21,8 +24,7 @@ const signUpUserIntoDB = async (payload: TUser) => {
     email: result?.email,
     role: result?.role,
     name: result?.name,
-    status: result?.status,
-    profilePicture: result?.profilePicture,
+    profilePicture: result?.profileImg,
   };
 
   const accessToken = createToken(
@@ -30,6 +32,59 @@ const signUpUserIntoDB = async (payload: TUser) => {
     config.jwt_access_token as string,
     config.jwt_access_expires_in as string
   );
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_token as string,
+    config.jwt_refresh_expired_in as string
+  );
+
+  return {
+    result,
+    accessToken,
+    refreshToken,
+  };
+};
+
+//login user
+const signInUser = async (payload: TSignInUser) => {
+  const { email, password } = payload;
+
+  // checking if the user is exist
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "This user is not found!");
+  }
+  //check if the use is blocked
+  if (user.isBlocked) {
+    throw new AppError(httpStatus.NOT_FOUND, "This user is blocked!");
+  }
+
+  //checking if the password is correct
+
+  if (!(await bcrypt.compare(password, user?.password))) {
+    throw new AppError(httpStatus.FORBIDDEN, "Password do not matched");
+  }
+
+  user.lastLogin = new Date();
+  user.save();
+
+  //create token and sent to the  client
+
+  const jwtPayload = {
+    _id: user?._id,
+    email: user?.email,
+    role: user?.role,
+    name: user?.name,
+    profilePicture: user?.profileImg,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_token as string,
+    config.jwt_access_expires_in as string
+  );
+
   const refreshToken = createToken(
     jwtPayload,
     config.jwt_refresh_token as string,
@@ -42,46 +97,44 @@ const signUpUserIntoDB = async (payload: TUser) => {
   };
 };
 
-const signInUser = async (payload: TSignInUser) => {
-  // checking if the user is exist
-  const user = await User.isUserExistsByEmail(payload?.email);
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "This user is not found!");
+//change password
+const changePassword = async (
+  user: JwtPayload,
+  payload: { oldPassword: string; newPassword: string }
+) => {
+  //check if the user is registered in the database
+  const userData = await User.findById(user._id);
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  //checking if the password is correct
+  //check if the user is blocked
+  if (userData.isBlocked) {
+    throw new AppError(httpStatus.FORBIDDEN, "The user is blocked");
+  }
 
-  if (!(await User.isPasswordMatched(payload?.password, user?.password)))
+  //checking is the password is correct
+  if (!(await bcrypt.compare(payload.oldPassword, user?.password))) {
     throw new AppError(httpStatus.FORBIDDEN, "Password do not matched");
+  }
 
-  //create token and sent to the  client
+  //hash new password
 
-  const jwtPayload = {
-    _id: user?._id,
-    email: user?.email,
-    role: user?.role,
-    name: user?.name,
-    status: user?.status,
-    profilePicture: user?.profilePicture,
-  };
-
-  const accessToken = createToken(
-    jwtPayload,
-    config.jwt_access_token as string,
-    config.jwt_access_expires_in as string
+  const newHashedPassword = await bcrypt.hash(
+    payload?.newPassword,
+    Number(config.bcrypt_round_salt)
   );
 
-  const refreshToken = createToken(
-    jwtPayload,
-    config.jwt_refresh_token as string,
-    config.jwt_refresh_expired_in as string
+  await User.findOneAndUpdate(
+    {
+      id: user._id,
+    },
+    {
+      password: newHashedPassword,
+    }
   );
 
-  return {
-    accessToken,
-    refreshToken,
-  };
+  return null;
 };
 
 const getAllUserFromDB = async () => {
@@ -103,7 +156,7 @@ const refreshToken = async (token: string) => {
   const { email } = decoded;
 
   //if the user is register in DB
-  const userData = await User.isUserExistsByEmail(email);
+  const userData = await User.findOne({ email });
 
   if (!userData) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
@@ -115,8 +168,7 @@ const refreshToken = async (token: string) => {
     email: userData?.email,
     role: userData?.role,
     name: userData?.name,
-    status: userData?.status,
-    profilePicture: userData?.profilePicture,
+    profilePicture: userData?.profileImg,
   };
 
   const accessToken = createToken(
@@ -136,4 +188,5 @@ export const userServices = {
   refreshToken,
   getUserFromDB,
   getAllUserFromDB,
+  changePassword,
 };

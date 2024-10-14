@@ -22,13 +22,13 @@ const getAllPost = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const getSingleCar = catchAsync(async (req, res) => {
+const getSinglePost = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await postServices.getSingleCarFromDB(id);
+  const result = await postServices.getSinglePostFromDB(id);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "A Car retrieved successfully",
+    message: "A Post retrieved successfully",
     data: result,
   });
 });
@@ -57,7 +57,7 @@ const deleteCar = catchAsync(async (req, res) => {
 export const postControllers = {
   createPost,
   getAllPost,
-  getSingleCar,
+  getSinglePost,
   deleteCar,
   updateCar,
 };

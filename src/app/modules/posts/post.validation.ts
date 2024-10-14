@@ -6,6 +6,7 @@ const createPostValidationSchema = z.object({
     description: z.string().min(1, { message: "Description is required" }),
     category: z.string(),
     author: z.string(),
+    authorImage: z.string(),
     status: z.string(),
   }),
 });

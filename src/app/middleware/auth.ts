@@ -4,12 +4,12 @@ import { TUserRole } from "../modules/users/user.interface";
 import catchAsync from "../utils/catchAsync";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../config";
-import { User } from "../modules/users/user.model";
 import { NextFunction, Request, Response } from "express";
+import User from "../modules/users/user.model";
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization?.split(" ")[1];
+    const token = req.headers.authorization;
     if (!token) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,
@@ -25,7 +25,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
     const { email, role } = decoded;
 
     //if the user is register in DB
-    const userData = await User.isUserExistsByEmail(email);
+    const userData = await User.findOne({ email: email });
 
     if (!userData) {
       throw new AppError(httpStatus.NOT_FOUND, "User not found");

@@ -13,7 +13,7 @@ router.post(
   userControllers.signUpUser
 );
 router.post("/login", userControllers.signInUser);
-router.get("/user/:email", userControllers.getUser);
+router.get("/user/:email", auth("user", "admin"), userControllers.getUser);
 router.get("/user", auth("admin"), userControllers.getAllUser);
 router.post(
   "/refresh-token",

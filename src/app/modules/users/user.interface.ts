@@ -1,25 +1,24 @@
-import { Model } from "mongoose";
+import { Types } from "mongoose";
+
 export const userRole = {
   user: "user",
   admin: "admin",
 } as const;
 
 export type TUser = {
-  _id?: string;
   name: string;
   email: string;
-  role: "user" | "admin";
-  status: "free" | "premium";
+  username: string;
+  profileImg?: string;
   password: string;
-  profilePicture: string;
+  isPremiumMember: boolean;
+  isBlocked: boolean;
+  role: "admin" | "user";
+  lastLogin: Date;
+  followers: Types.ObjectId[];
+  following: Types.ObjectId[];
 };
-export interface UserModel extends Model<TUser> {
-  isUserExistsByEmail(email: string): Promise<TUser>;
-  isPasswordMatched(
-    plainTextPassword: string,
-    hashedPassword: string
-  ): Promise<boolean>;
-}
+
 export type TSignInUser = {
   email: string;
   password: string;

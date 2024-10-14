@@ -12,7 +12,7 @@ router.post(
 );
 
 router.get("/", postControllers.getAllPost);
-router.get("/:id", postControllers.getSingleCar);
+router.get("/:id", postControllers.getSinglePost);
 router.put(
   "/:id",
   auth("admin"),

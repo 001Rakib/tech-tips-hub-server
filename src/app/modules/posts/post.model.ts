@@ -12,6 +12,9 @@ const postSchema = new Schema<TPost>(
     author: {
       type: String,
     },
+    authorImage: {
+      type: String,
+    },
     image: {
       type: String,
     },

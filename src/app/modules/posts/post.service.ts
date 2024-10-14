@@ -34,11 +34,11 @@ const getAllPostFromDB = async (query: Record<string, unknown>) => {
   return result;
 };
 
-const getSingleCarFromDB = async (id: string) => {
+const getSinglePostFromDB = async (id: string) => {
   const result = await Post.findById(id);
 
   if (!result) {
-    throw new AppError(httpStatus.NOT_FOUND, "Car not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Post not found");
   }
 
   return result;
@@ -78,7 +78,7 @@ const deleteCarFromDB = async (id: string) => {
 export const postServices = {
   createPostIntoDB,
   getAllPostFromDB,
-  getSingleCarFromDB,
+  getSinglePostFromDB,
   deleteCarFromDB,
   updateCarIntoDB,
 };
