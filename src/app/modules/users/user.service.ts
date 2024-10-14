@@ -138,12 +138,32 @@ const changePassword = async (
 };
 
 const getAllUserFromDB = async () => {
-  const result = await User.find();
+  const result = await User.find()
+    .populate({
+      path: "following",
+      select:
+        "_id username name email isEmailVerified isPremiumMember profileImg",
+    })
+    .populate({
+      path: "followers",
+      select:
+        "_id username name email isEmailVerified isPremiumMember profileImg",
+    });
   return result;
 };
 
 const getUserFromDB = async (email: string) => {
-  const result = await User.findOne({ email: email });
+  const result = await User.findOne({ email: email })
+    .populate({
+      path: "following",
+      select:
+        "_id username name email isEmailVerified isPremiumMember profileImg",
+    })
+    .populate({
+      path: "followers",
+      select:
+        "_id username name email isEmailVerified isPremiumMember profileImg",
+    });
   return result;
 };
 

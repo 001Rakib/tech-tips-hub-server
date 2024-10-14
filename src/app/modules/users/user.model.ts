@@ -19,7 +19,6 @@ const userSchema = new Schema<TUser>(
       required: true,
       default: "user",
     },
-    username: { type: String, required: true, unique: true, trim: true },
     profileImg: { type: String, required: false },
     password: { type: String, required: true, select: false },
     isPremiumMember: { type: Boolean, required: true, default: false },

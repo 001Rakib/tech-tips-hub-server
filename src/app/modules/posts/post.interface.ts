@@ -1,10 +1,31 @@
+import { Types } from "mongoose";
+
+export interface IVote {
+  _id: string;
+  name: string;
+  email: string;
+  isPremiumMember: boolean;
+}
+
+interface IComment {
+  user: Types.ObjectId;
+  content: string;
+  vote: Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export type TPost = {
+  author: Types.ObjectId;
   title: string;
+  shortDescription: string;
   description: string;
-  author: string;
-  authorImage: string;
-  image: string;
+  images: string[];
   category: string;
-  status: "free" | "premium";
-  isDeleted: boolean;
+  topics: string[];
+  vote: Types.ObjectId[];
+  comments: IComment[];
+  views: number;
+  shares: number;
+  isPremium: boolean;
 };

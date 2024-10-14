@@ -33,23 +33,23 @@ const getSinglePost = catchAsync(async (req, res) => {
   });
 });
 
-const updateCar = catchAsync(async (req, res) => {
+const updatePost = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await postServices.updateCarIntoDB(id, req.body);
+  const result = await postServices.updatePostIntoDB(id, req.body);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "Car updated successfully",
+    message: "Post updated successfully",
     data: result,
   });
 });
-const deleteCar = catchAsync(async (req, res) => {
+const deletePost = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await postServices.deleteCarFromDB(id);
+  const result = await postServices.deletePostFromDB(id);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "Car Deleted successfully",
+    message: "Post Deleted successfully",
     data: result,
   });
 });
@@ -58,6 +58,6 @@ export const postControllers = {
   createPost,
   getAllPost,
   getSinglePost,
-  deleteCar,
-  updateCar,
+  deletePost,
+  updatePost,
 };

@@ -8,7 +8,6 @@ export const userRole = {
 export type TUser = {
   name: string;
   email: string;
-  username: string;
   profileImg?: string;
   password: string;
   isPremiumMember: boolean;

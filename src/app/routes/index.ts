@@ -12,7 +12,7 @@ const moduleRoutes = [
     route: UserRoutes,
   },
   {
-    path: "/articles",
+    path: "/posts",
     route: postRoutes,
   },
   {
