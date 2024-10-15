@@ -96,7 +96,21 @@ const signInUser = async (payload: TSignInUser) => {
     refreshToken,
   };
 };
+//update user details
+const updateUser = async (id: string, payload: Partial<TUser>) => {
+  //check if the car available in the database
+  const isUserExists = await User.findById(id);
 
+  if (!isUserExists) {
+    throw new AppError(httpStatus.NOT_FOUND, "Post not found");
+  }
+
+  const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+    upsert: true,
+  });
+  return result;
+};
 //change password
 const changePassword = async (
   user: JwtPayload,
@@ -136,7 +150,7 @@ const changePassword = async (
 
   return null;
 };
-
+//get all users
 const getAllUserFromDB = async () => {
   const result = await User.find()
     .populate({
@@ -151,7 +165,7 @@ const getAllUserFromDB = async () => {
     });
   return result;
 };
-
+//get single user
 const getUserFromDB = async (email: string) => {
   const result = await User.findOne({ email: email })
     .populate({
@@ -209,4 +223,5 @@ export const userServices = {
   getUserFromDB,
   getAllUserFromDB,
   changePassword,
+  updateUser,
 };

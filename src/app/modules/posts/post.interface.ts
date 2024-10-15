@@ -23,7 +23,8 @@ export type TPost = {
   images: string[];
   category: string;
   topics: string[];
-  vote: Types.ObjectId[];
+  upVote: Types.ObjectId[];
+  downVote: Types.ObjectId[];
   comments: IComment[];
   views: number;
   shares: number;

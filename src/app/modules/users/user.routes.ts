@@ -3,7 +3,6 @@ import validateRequest from "../../middleware/validateRequest";
 import { userValidationSchema } from "./user.validation";
 import { userControllers } from "./user.controllers";
 import { authValidation } from "../auth/auth.validation";
-import auth from "../../middleware/auth";
 
 const router = Router();
 
@@ -13,8 +12,9 @@ router.post(
   userControllers.signUpUser
 );
 router.post("/login", userControllers.signInUser);
-router.get("/user/:email", auth("user", "admin"), userControllers.getUser);
-router.get("/user", auth("admin"), userControllers.getAllUser);
+router.get("/user/:email", userControllers.getUser);
+router.get("/user", userControllers.getAllUser);
+router.patch("/user/:id", userControllers.updateUser);
 router.post(
   "/refresh-token",
   validateRequest(authValidation.refreshTokenValidationSchema),

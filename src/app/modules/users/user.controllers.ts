@@ -52,6 +52,17 @@ const getAllUser = catchAsync(async (req, res) => {
   });
 });
 
+const updateUser = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await userServices.updateUser(id, req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "User updated successfully",
+    data: result,
+  });
+});
+
 const changePassword = catchAsync(async (req, res) => {
   const { ...passwordData } = req.body;
 
@@ -84,4 +95,5 @@ export const userControllers = {
   getUser,
   getAllUser,
   changePassword,
+  updateUser,
 };

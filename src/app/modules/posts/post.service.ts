@@ -11,13 +11,15 @@ const createPostIntoDB = async (payload: TPost) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getAllPostFromDB = async (query: Record<string, unknown>) => {
   const result = await Post.find().populate(
-    "author vote comments.user comments.vote"
+    "author upVote downVote comments.user comments.vote comments.content"
   );
   return result;
 };
 
 const getSinglePostFromDB = async (id: string) => {
-  const result = await Post.findById(id);
+  const result = await Post.findById(id).populate(
+    "author upVote downVote comments.user comments.vote comments.content"
+  );
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Post not found");

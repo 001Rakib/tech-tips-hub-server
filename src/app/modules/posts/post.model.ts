@@ -27,7 +27,13 @@ const postSchema = new Schema<TPost>(
       required: true,
     },
 
-    vote: [
+    upVote: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    downVote: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",
