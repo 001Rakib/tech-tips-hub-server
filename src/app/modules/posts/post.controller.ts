@@ -18,7 +18,7 @@ const getAllPost = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "Cars retrieved successfully",
+    message: "Posts retrieved successfully",
     data: result,
   });
 });

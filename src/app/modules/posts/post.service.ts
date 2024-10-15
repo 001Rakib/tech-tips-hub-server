@@ -2,17 +2,28 @@ import httpStatus from "http-status";
 import AppError from "../../error/AppError";
 import { TPost } from "./post.interface";
 import Post from "./post.model";
+import { QueryBuilder } from "../../builder/QueryBuilder";
+import { PostSearchableFields } from "./post.constant";
 
 const createPostIntoDB = async (payload: TPost) => {
   const result = await Post.create(payload);
   return result;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getAllPostFromDB = async (query: Record<string, unknown>) => {
-  const result = await Post.find().populate(
-    "author upVote downVote comments.user comments.vote comments.content"
-  );
+  const postQuery = new QueryBuilder(
+    Post.find().populate(
+      "author upVote downVote comments.user comments.vote comments.content"
+    ),
+    query
+  )
+    .filter()
+    .search(PostSearchableFields)
+    .sort()
+    // .paginate()
+    .fields();
+
+  const result = await postQuery.modelQuery;
   return result;
 };
 

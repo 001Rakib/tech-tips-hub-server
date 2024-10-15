@@ -25,6 +25,7 @@ const signUpUserIntoDB = async (payload: TUser) => {
     role: result?.role,
     name: result?.name,
     profilePicture: result?.profileImg,
+    isPremiumMember: result?.isPremiumMember,
   };
 
   const accessToken = createToken(
@@ -77,6 +78,7 @@ const signInUser = async (payload: TSignInUser) => {
     role: user?.role,
     name: user?.name,
     profilePicture: user?.profileImg,
+    isPremiumMember: user?.isPremiumMember,
   };
 
   const accessToken = createToken(
@@ -170,13 +172,11 @@ const getUserFromDB = async (email: string) => {
   const result = await User.findOne({ email: email })
     .populate({
       path: "following",
-      select:
-        "_id username name email isEmailVerified isPremiumMember profileImg",
+      select: "_id username name email isPremiumMember profileImg",
     })
     .populate({
       path: "followers",
-      select:
-        "_id username name email isEmailVerified isPremiumMember profileImg",
+      select: "_id username name email isPremiumMember profileImg",
     });
   return result;
 };
