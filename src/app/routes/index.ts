@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { UserRoutes } from "../modules/users/user.routes";
-import { bookingRoutes } from "../modules/booking/booking.routes";
+import { followRoutes } from "../modules/follow/follow.routes";
 import { paymentRoute } from "../modules/payment/payment.route";
 import { postRoutes } from "../modules/posts/post.routes";
 
@@ -16,8 +16,8 @@ const moduleRoutes = [
     route: postRoutes,
   },
   {
-    path: "/bookings",
-    route: bookingRoutes,
+    path: "/follow",
+    route: followRoutes,
   },
   {
     path: "/payment",

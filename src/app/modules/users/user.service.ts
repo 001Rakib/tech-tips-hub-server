@@ -26,6 +26,7 @@ const signUpUserIntoDB = async (payload: TUser) => {
     name: result?.name,
     profilePicture: result?.profileImg,
     isPremiumMember: result?.isPremiumMember,
+    lastLogin: result?.lastLogin,
   };
 
   const accessToken = createToken(
@@ -79,6 +80,7 @@ const signInUser = async (payload: TSignInUser) => {
     name: user?.name,
     profilePicture: user?.profileImg,
     isPremiumMember: user?.isPremiumMember,
+    lastLogin: user?.lastLogin,
   };
 
   const accessToken = createToken(

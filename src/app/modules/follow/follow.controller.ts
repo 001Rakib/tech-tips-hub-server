@@ -1,19 +1,20 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
-import { bookingServices } from "./booking.service";
+import { followServices } from "./follow.service";
 import sendResponse from "../../utils/sendResponse";
 
-const getAllBookings = catchAsync(async (req, res) => {
-  const result = await bookingServices.getAllBookings(req.query);
+const userToFollow = catchAsync(async (req, res) => {
+  const { id } = req.query;
+  const result = await followServices.userToFollow(id as string);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "Bookings retrieved successfully",
+    message: "User to follow retrieved successfully",
     data: result,
   });
 });
 const createBooking = catchAsync(async (req, res) => {
-  const result = await bookingServices.createBookingIntoDB(req.body, req.user);
+  const result = await followServices.createBookingIntoDB(req.body, req.user);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -22,7 +23,7 @@ const createBooking = catchAsync(async (req, res) => {
   });
 });
 const getMyBookings = catchAsync(async (req, res) => {
-  const result = await bookingServices.getMyBookings(req.user);
+  const result = await followServices.getMyBookings(req.user);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -31,7 +32,7 @@ const getMyBookings = catchAsync(async (req, res) => {
   });
 });
 const getMySingleBooking = catchAsync(async (req, res) => {
-  const result = await bookingServices.getMySingleBooking(req.params.id);
+  const result = await followServices.getMySingleBooking(req.params.id);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -40,9 +41,9 @@ const getMySingleBooking = catchAsync(async (req, res) => {
   });
 });
 
-export const bookingControllers = {
+export const followControllers = {
   createBooking,
   getMyBookings,
-  getAllBookings,
+  userToFollow,
   getMySingleBooking,
 };

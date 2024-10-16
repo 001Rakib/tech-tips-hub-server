@@ -1,23 +1,40 @@
 import { JwtPayload } from "jsonwebtoken";
-import { User } from "../users/user.model";
 import { TBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
-import { Car } from "../posts/post.model";
+import User from "../users/user.model";
+import AppError from "../../error/AppError";
+import httpStatus from "http-status";
 
-const getAllBookings = async (query: Record<string, unknown>) => {
-  let date = "";
-  if (query?.date) {
-    date = query.date as string;
+const userToFollow = async (id: string) => {
+  if (!id) {
+    throw new AppError(httpStatus.NOT_FOUND, "NO Id Provided");
   }
 
-  if (date) {
-    const result = await Booking.find({ date })
-      .populate("user")
-      .populate("carId");
-    return result;
+  const currentUser = await User.findById(id).select("following").lean();
+
+  if (
+    !currentUser ||
+    !Array.isArray(currentUser.following) ||
+    currentUser.following.length === 0
+  ) {
+    const whoToFollow = await User.find({
+      _id: { $ne: id },
+    })
+      .select("_id name email isPremiumMember profileImg")
+      .sort({ createdAt: -1 });
+
+    return whoToFollow;
   }
-  const result = await Booking.find().populate("user").populate("carId");
-  return result;
+
+  const userToFollow = await User.find({
+    _id: {
+      $nin: [...currentUser.following, id],
+    },
+  })
+    .select("_id name email isPremiumMember profileImg")
+    .sort({ createdAt: -1 });
+
+  return userToFollow;
 };
 
 const createBookingIntoDB = async (payload: TBooking, userInfo: JwtPayload) => {
@@ -28,7 +45,7 @@ const createBookingIntoDB = async (payload: TBooking, userInfo: JwtPayload) => {
     payload.user = user?._id;
   }
   //update the car status to unavailable
-  await Car.findByIdAndUpdate(
+  await User.findByIdAndUpdate(
     payload.carId,
     { status: "unavailable" },
     { new: true }
@@ -54,9 +71,9 @@ const getMySingleBooking = async (id: string) => {
   return result;
 };
 
-export const bookingServices = {
+export const followServices = {
   createBookingIntoDB,
   getMyBookings,
-  getAllBookings,
+  userToFollow,
   getMySingleBooking,
 };

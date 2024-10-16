@@ -1,6 +1,6 @@
 import { TPayment } from "./payment.interface";
 import { Payment } from "./payment.model";
-import { Booking } from "../booking/booking.model";
+import { Booking } from "../follow/booking.model";
 import { initiatePayment } from "./payment.utils";
 
 const createPaymentIntoDB = async (payload: TPayment) => {
