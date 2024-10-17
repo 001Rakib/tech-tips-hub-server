@@ -10,13 +10,18 @@ export interface IVotePayload {
   postId: Types.ObjectId;
   user: Types.ObjectId;
 }
+export interface ICommentPayload {
+  postId: Types.ObjectId;
+  user: Types.ObjectId;
+  comment: string;
+}
 
 interface IComment {
   user: Types.ObjectId;
-  content: string;
-  vote: Types.ObjectId[];
-  createdAt: Date;
-  updatedAt: Date;
+  comment: string;
+  vote?: Types.ObjectId[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export type TPost = {

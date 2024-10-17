@@ -61,6 +61,15 @@ const downVotePost = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const commentOnPost = catchAsync(async (req, res) => {
+  const result = await postServices.commentOnPost(req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Commented successfully",
+    data: result,
+  });
+});
 const deletePost = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await postServices.deletePostFromDB(id);
@@ -80,4 +89,5 @@ export const postControllers = {
   updatePost,
   upVotePost,
   downVotePost,
+  commentOnPost,
 };

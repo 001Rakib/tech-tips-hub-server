@@ -46,7 +46,7 @@ const postSchema = new Schema<TPost>(
           required: true,
           ref: "User",
         },
-        content: {
+        comment: {
           type: String,
           required: true,
         },

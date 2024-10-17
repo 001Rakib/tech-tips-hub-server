@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import AppError from "../../error/AppError";
-import { IVotePayload, TPost } from "./post.interface";
+import { ICommentPayload, IVotePayload, TPost } from "./post.interface";
 import Post from "./post.model";
 import { QueryBuilder } from "../../builder/QueryBuilder";
 import { PostSearchableFields } from "./post.constant";
@@ -15,7 +15,7 @@ const createPostIntoDB = async (payload: TPost) => {
 const getAllPostFromDB = async (query: Record<string, unknown>) => {
   const postQuery = new QueryBuilder(
     Post.find().populate(
-      "author upVote downVote comments.user comments.vote comments.content"
+      "author upVote downVote comments.user comments.vote comments.comment"
     ),
     query
   )
@@ -31,7 +31,7 @@ const getAllPostFromDB = async (query: Record<string, unknown>) => {
 
 const getSinglePostFromDB = async (id: string) => {
   const result = await Post.findById(id).populate(
-    "author upVote downVote comments.user comments.vote comments.content"
+    "author upVote downVote comments.user comments.vote comments.comment"
   );
 
   if (!result) {
@@ -158,6 +158,49 @@ const downVotePostIntoDB = async (payload: IVotePayload) => {
     );
   }
 };
+//for commenting on post
+const commentOnPost = async (payload: ICommentPayload) => {
+  const { user, comment, postId } = payload;
+
+  try {
+    // Validate that the payload has the required fields
+    if (!user || !comment) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Required parameters missing");
+    }
+
+    // Ensure user is a valid ObjectId
+    if (!Types.ObjectId.isValid(user)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid User ID");
+    }
+
+    // Convert user to ObjectId
+    const userObjectId = new Types.ObjectId(user);
+
+    // Retrieve post and its comments
+    const post = await Post.findById(postId).select("comments");
+
+    if (!post) {
+      throw new AppError(httpStatus.NOT_FOUND, "Post Not Found");
+    }
+
+    // Add the new comment to the post's comments array
+    post.comments.push({
+      user: userObjectId,
+      comment: comment,
+      createdAt: new Date(),
+    });
+
+    // Save the updated post document
+    const updatedPost = await post.save();
+
+    return updatedPost.comments; // Returning only comments,
+  } catch (error: any) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      error.message || "An error occurred"
+    );
+  }
+};
 
 const deletePostFromDB = async (id: string) => {
   //check if the car available in the database
@@ -179,4 +222,5 @@ export const postServices = {
   updatePostIntoDB,
   upVotePostIntoDB,
   downVotePostIntoDB,
+  commentOnPost,
 };
