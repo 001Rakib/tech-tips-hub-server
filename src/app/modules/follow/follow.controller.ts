@@ -13,12 +13,12 @@ const userToFollow = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const createBooking = catchAsync(async (req, res) => {
-  const result = await followServices.createBookingIntoDB(req.body, req.user);
+const followUser = catchAsync(async (req, res) => {
+  const result = await followServices.followUser(req.body);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "Car booked successfully",
+    message: "User followed successfully",
     data: result,
   });
 });
@@ -42,7 +42,7 @@ const getMySingleBooking = catchAsync(async (req, res) => {
 });
 
 export const followControllers = {
-  createBooking,
+  followUser,
   getMyBookings,
   userToFollow,
   getMySingleBooking,

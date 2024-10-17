@@ -6,6 +6,10 @@ export interface IVote {
   email: string;
   isPremiumMember: boolean;
 }
+export interface IVotePayload {
+  postId: Types.ObjectId;
+  user: Types.ObjectId;
+}
 
 interface IComment {
   user: Types.ObjectId;

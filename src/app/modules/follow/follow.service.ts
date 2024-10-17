@@ -1,10 +1,12 @@
 import { JwtPayload } from "jsonwebtoken";
-import { TBooking } from "./booking.interface";
+import { TFollowPayload } from "./follow.interface";
 import { Booking } from "./booking.model";
 import User from "../users/user.model";
 import AppError from "../../error/AppError";
 import httpStatus from "http-status";
+import mongoose from "mongoose";
 
+//find user to follow
 const userToFollow = async (id: string) => {
   if (!id) {
     throw new AppError(httpStatus.NOT_FOUND, "NO Id Provided");
@@ -37,23 +39,53 @@ const userToFollow = async (id: string) => {
   return userToFollow;
 };
 
-const createBookingIntoDB = async (payload: TBooking, userInfo: JwtPayload) => {
-  const user = await User.findOne({ email: userInfo?.email });
+//follow users
+const followUser = async (payload: TFollowPayload) => {
+  const { follower, following } = payload;
 
-  if (user) {
-    //set the logged in user Object id while booking a car
-    payload.user = user?._id;
+  let session = null;
+
+  try {
+    if (!follower || !following) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Required parameters missing");
+    }
+
+    session = await mongoose.startSession();
+    session.startTransaction();
+
+    const updatedFollower = await User.findByIdAndUpdate(
+      follower,
+      { $addToSet: { following: following } },
+      { new: true, session } // Pass session to ensure atomicity
+    );
+
+    const updatedFollowing = await User.findByIdAndUpdate(
+      following,
+      { $addToSet: { followers: follower } },
+      { new: true, session } // Pass session to ensure atomicity
+    );
+
+    if (!updatedFollower || !updatedFollowing) {
+      await session.abortTransaction();
+      return new AppError(
+        httpStatus.FORBIDDEN,
+        "Failed to update follower or following"
+      );
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return "User Successfully Followed";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    // If an error occurs, rollback by aborting the transaction
+    if (session) {
+      await session.abortTransaction();
+      session.endSession();
+      throw new Error(error);
+    }
   }
-  //update the car status to unavailable
-  await User.findByIdAndUpdate(
-    payload.carId,
-    { status: "unavailable" },
-    { new: true }
-  );
-  const result = (
-    await (await Booking.create(payload)).populate("user")
-  ).populate("carId");
-  return result;
 };
 
 const getMyBookings = async (userInfo: JwtPayload) => {
@@ -72,7 +104,7 @@ const getMySingleBooking = async (id: string) => {
 };
 
 export const followServices = {
-  createBookingIntoDB,
+  followUser,
   getMyBookings,
   userToFollow,
   getMySingleBooking,

@@ -43,6 +43,24 @@ const updatePost = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const upVotePost = catchAsync(async (req, res) => {
+  const result = await postServices.upVotePostIntoDB(req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Up Voted successfully",
+    data: result,
+  });
+});
+const downVotePost = catchAsync(async (req, res) => {
+  const result = await postServices.upVotePostIntoDB(req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Down Voted successfully",
+    data: result,
+  });
+});
 const deletePost = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await postServices.deletePostFromDB(id);
@@ -60,4 +78,6 @@ export const postControllers = {
   getSinglePost,
   deletePost,
   updatePost,
+  upVotePost,
+  downVotePost,
 };
