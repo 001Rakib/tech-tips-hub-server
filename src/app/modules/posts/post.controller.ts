@@ -53,7 +53,7 @@ const upVotePost = catchAsync(async (req, res) => {
   });
 });
 const downVotePost = catchAsync(async (req, res) => {
-  const result = await postServices.upVotePostIntoDB(req.body);
+  const result = await postServices.downVotePostIntoDB(req.body);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

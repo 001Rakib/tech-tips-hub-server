@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import { TPost } from "./post.interface";
 
 const postSchema = new Schema<TPost>(
@@ -29,20 +29,20 @@ const postSchema = new Schema<TPost>(
 
     upVote: [
       {
-        type: Schema.Types.ObjectId,
+        type: Types.ObjectId,
         ref: "User",
       },
     ],
     downVote: [
       {
-        type: Schema.Types.ObjectId,
+        type: Types.ObjectId,
         ref: "User",
       },
     ],
     comments: [
       {
         user: {
-          type: Schema.Types.ObjectId,
+          type: Types.ObjectId,
           required: true,
           ref: "User",
         },

@@ -65,7 +65,11 @@ const upVotePostIntoDB = async (payload: IVotePayload) => {
       throw new AppError(httpStatus.BAD_REQUEST, "Required parameters missing");
     }
 
-    // Convert user to ObjectId for comparison
+    // Validate ObjectId
+    if (!Types.ObjectId.isValid(postId) || !Types.ObjectId.isValid(user)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid ObjectId format");
+    }
+
     const userObjectId = new Types.ObjectId(user);
 
     const post = await Post.findById(postId).select("upVote");
@@ -74,30 +78,36 @@ const upVotePostIntoDB = async (payload: IVotePayload) => {
       throw new AppError(httpStatus.BAD_REQUEST, "Post Not Found");
     }
 
-    // Check if the user has already voted (comparing ObjectIds)
     const hasVoted = post.upVote.some((upVoteUser: Types.ObjectId) =>
       upVoteUser.equals(userObjectId)
     );
 
+    let result;
     if (hasVoted) {
-      // Remove the vote (undo)
-      post.upVote = post.upVote.filter(
-        (upVoteUser: Types.ObjectId) => !upVoteUser.equals(userObjectId)
+      // Atomic operation to remove the vote
+      result = await Post.findByIdAndUpdate(
+        postId,
+        { $pull: { upVote: userObjectId } },
+        { new: true } // Return the updated document
       );
     } else {
-      // Add the vote
-      post.upVote.push(userObjectId);
+      // Atomic operation to add the vote
+      result = await Post.findByIdAndUpdate(
+        postId,
+        { $addToSet: { upVote: userObjectId } }, // Prevent duplicate entries
+        { new: true }
+      );
     }
-
-    // Save the updated post document
-    const result = await post.save();
 
     return result;
   } catch (error: any) {
-    throw new Error(error);
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      error.message || "An error occurred"
+    );
   }
 };
-//for upDownVoting post
+//for downVoting post
 const downVotePostIntoDB = async (payload: IVotePayload) => {
   const { postId, user } = payload;
 
@@ -106,7 +116,11 @@ const downVotePostIntoDB = async (payload: IVotePayload) => {
       throw new AppError(httpStatus.BAD_REQUEST, "Required parameters missing");
     }
 
-    // Convert user to ObjectId for comparison
+    // Validate ObjectId
+    if (!Types.ObjectId.isValid(postId) || !Types.ObjectId.isValid(user)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid ObjectId format");
+    }
+
     const userObjectId = new Types.ObjectId(user);
 
     const post = await Post.findById(postId).select("downVote");
@@ -115,27 +129,33 @@ const downVotePostIntoDB = async (payload: IVotePayload) => {
       throw new AppError(httpStatus.BAD_REQUEST, "Post Not Found");
     }
 
-    // Check if the user has already voted (comparing ObjectIds)
     const hasVoted = post.downVote.some((downVoteUser: Types.ObjectId) =>
       downVoteUser.equals(userObjectId)
     );
 
+    let result;
     if (hasVoted) {
-      // Remove the vote
-      post.downVote = post.downVote.filter(
-        (downVoteUser: Types.ObjectId) => !downVoteUser.equals(userObjectId)
+      // Atomic operation to remove the vote
+      result = await Post.findByIdAndUpdate(
+        postId,
+        { $pull: { downVote: userObjectId } },
+        { new: true } // Return the updated document
       );
     } else {
-      // Add the vote
-      post.downVote.push(userObjectId);
+      // Atomic operation to add the vote
+      result = await Post.findByIdAndUpdate(
+        postId,
+        { $addToSet: { downVote: userObjectId } }, // Prevent duplicate entries
+        { new: true }
+      );
     }
-
-    // Save the updated post document
-    const result = await post.save();
 
     return result;
   } catch (error: any) {
-    throw new Error(error);
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      error.message || "An error occurred"
+    );
   }
 };
 
