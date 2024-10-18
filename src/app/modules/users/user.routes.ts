@@ -13,9 +13,14 @@ router.post(
   userControllers.signUpUser
 );
 router.post("/login", userControllers.signInUser);
-router.get("/user/:email", userControllers.getUser);
-router.get("/user", userControllers.getAllUser);
+router.get("/user", auth("user", "admin"), userControllers.getAllUser);
+router.get("/user/:id", userControllers.getUser);
 router.patch("/user/:id", auth("user", "admin"), userControllers.updateUser);
+router.patch(
+  "/user/status/:id",
+  auth("admin"),
+  userControllers.updateUserStatus
+);
 router.post(
   "/refresh-token",
   validateRequest(authValidation.refreshTokenValidationSchema),

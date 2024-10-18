@@ -115,6 +115,36 @@ const updateUser = async (id: string, payload: Partial<TUser>) => {
   });
   return result;
 };
+const updateUserStatus = async (id: string, payload: Partial<TUser>) => {
+  //check if the car available in the database
+  const isUserExists = await User.findById(id);
+
+  if (!isUserExists) {
+    throw new AppError(httpStatus.NOT_FOUND, "Post not found");
+  }
+
+  if (payload.role) {
+    const result = await User.findByIdAndUpdate(
+      id,
+      { role: isUserExists.role === "admin" ? "user" : "admin" },
+      {
+        new: true,
+      }
+    );
+    return result;
+  }
+
+  if (payload.isBlocked) {
+    const result = await User.findByIdAndUpdate(
+      id,
+      { isBlocked: isUserExists.isBlocked === false ? true : false },
+      {
+        new: true,
+      }
+    );
+    return result;
+  }
+};
 //change password
 const changePassword = async (
   user: JwtPayload,
@@ -170,8 +200,8 @@ const getAllUserFromDB = async () => {
   return result;
 };
 //get single user
-const getUserFromDB = async (email: string) => {
-  const result = await User.findOne({ email: email })
+const getUserFromDB = async (id: string) => {
+  const result = await User.findById(id)
     .populate({
       path: "following",
       select: "_id username name email isPremiumMember profileImg",
@@ -226,4 +256,5 @@ export const userServices = {
   getAllUserFromDB,
   changePassword,
   updateUser,
+  updateUserStatus,
 };

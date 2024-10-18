@@ -32,9 +32,9 @@ const signInUser = catchAsync(async (req, res) => {
 });
 
 const getUser = catchAsync(async (req, res) => {
-  const { email } = req.params;
+  const { id } = req.params;
 
-  const result = await userServices.getUserFromDB(email);
+  const result = await userServices.getUserFromDB(id);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -55,6 +55,16 @@ const getAllUser = catchAsync(async (req, res) => {
 const updateUser = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await userServices.updateUser(id, req.body);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "User updated successfully",
+    data: result,
+  });
+});
+const updateUserStatus = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await userServices.updateUserStatus(id, req.body);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -96,4 +106,5 @@ export const userControllers = {
   getAllUser,
   changePassword,
   updateUser,
+  updateUserStatus,
 };
