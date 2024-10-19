@@ -16,6 +16,7 @@ router.post("/login", userControllers.signInUser);
 router.get("/user", auth("user", "admin"), userControllers.getAllUser);
 router.get("/user/:id", userControllers.getUser);
 router.patch("/user/:id", auth("user", "admin"), userControllers.updateUser);
+router.delete("/user/:id", auth("user", "admin"), userControllers.deleteUser);
 router.patch(
   "/user/status/:id",
   auth("admin"),

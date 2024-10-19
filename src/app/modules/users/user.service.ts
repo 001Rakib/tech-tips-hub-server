@@ -213,6 +213,18 @@ const getUserFromDB = async (id: string) => {
   return result;
 };
 
+const deleteUserFromDB = async (id: string) => {
+  //check if the car available in the database
+  const isUserExists = await User.findById(id);
+
+  if (!isUserExists) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  const result = await User.findByIdAndDelete(id);
+  return result;
+};
+
 const refreshToken = async (token: string) => {
   //verify token
   const decoded = jwt.verify(
@@ -257,4 +269,5 @@ export const userServices = {
   changePassword,
   updateUser,
   updateUserStatus,
+  deleteUserFromDB,
 };
