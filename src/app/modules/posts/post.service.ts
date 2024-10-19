@@ -24,10 +24,10 @@ const getAllPostFromDB = async (query: Record<string, unknown>) => {
     ),
     query
   )
-    .filter()
     .search(PostSearchableFields)
+    .filter()
     .sort()
-    // .paginate()
+    .paginate()
     .fields();
 
   const result = await postQuery.modelQuery;
