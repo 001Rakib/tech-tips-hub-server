@@ -13,6 +13,11 @@ router.post(
   userControllers.signUpUser
 );
 router.post("/login", userControllers.signInUser);
+router.patch(
+  "/user/change-password",
+  auth("admin", "user"),
+  userControllers.changePassword
+);
 router.get("/user", auth("user", "admin"), userControllers.getAllUser);
 router.get("/user/:id", userControllers.getUser);
 router.patch("/user/:id", auth("user", "admin"), userControllers.updateUser);
@@ -22,6 +27,7 @@ router.patch(
   auth("admin"),
   userControllers.updateUserStatus
 );
+
 router.post(
   "/refresh-token",
   validateRequest(authValidation.refreshTokenValidationSchema),

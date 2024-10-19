@@ -151,7 +151,7 @@ const changePassword = async (
   payload: { oldPassword: string; newPassword: string }
 ) => {
   //check if the user is registered in the database
-  const userData = await User.findById(user._id);
+  const userData = await User.findById(user._id).select("password");
   if (!userData) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -161,29 +161,26 @@ const changePassword = async (
     throw new AppError(httpStatus.FORBIDDEN, "The user is blocked");
   }
 
-  //checking is the password is correct
-  if (!(await bcrypt.compare(payload.oldPassword, user?.password))) {
-    throw new AppError(httpStatus.FORBIDDEN, "Password do not matched");
+  //checking if the password is correct (compare payload.oldPassword with userData.password)
+  if (!(await bcrypt.compare(payload.oldPassword, userData.password))) {
+    throw new AppError(httpStatus.FORBIDDEN, "Password do not match");
   }
 
   //hash new password
-
   const newHashedPassword = await bcrypt.hash(
-    payload?.newPassword,
+    payload.newPassword,
     Number(config.bcrypt_round_salt)
   );
 
+  //update the password in the database
   await User.findOneAndUpdate(
-    {
-      id: user._id,
-    },
-    {
-      password: newHashedPassword,
-    }
+    { _id: user._id },
+    { password: newHashedPassword }
   );
 
   return null;
 };
+
 //get all users
 const getAllUserFromDB = async () => {
   const result = await User.find()
