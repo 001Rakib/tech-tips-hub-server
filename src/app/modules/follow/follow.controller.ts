@@ -22,28 +22,8 @@ const followUser = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const getMyBookings = catchAsync(async (req, res) => {
-  const result = await followServices.getMyBookings(req.user);
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: "My Bookings retrieved successfully",
-    data: result,
-  });
-});
-const getMySingleBooking = catchAsync(async (req, res) => {
-  const result = await followServices.getMySingleBooking(req.params.id);
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: "My Booking retrieved successfully",
-    data: result,
-  });
-});
 
 export const followControllers = {
   followUser,
-  getMyBookings,
   userToFollow,
-  getMySingleBooking,
 };

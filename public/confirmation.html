@@ -34,18 +34,25 @@
       .success-content p {
         margin-bottom: 20px;
       }
-      .print-button {
+      .home-button {
         background-color: #4caf50;
         color: #fff;
         border: none;
         padding: 10px 20px;
         font-size: 16px;
         cursor: pointer;
+        border-radius: 5px;
+        margin-top: 20px;
       }
-      .print-button:hover {
+      .home-button:hover {
         background-color: #3e8e41;
       }
     </style>
+    <script>
+      function goHome() {
+        window.location.href = "http://localhost:3000/"; // Redirect to the home page
+      }
+    </script>
   </head>
   <body>
     <div class="success-container">
@@ -57,6 +64,7 @@
           Thank you for your payment. Your transaction has been processed
           successfully.
         </p>
+        <button class="home-button" onclick="goHome()">Back to Home</button>
       </div>
     </div>
   </body>

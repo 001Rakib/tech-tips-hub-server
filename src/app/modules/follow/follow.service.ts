@@ -1,6 +1,4 @@
-import { JwtPayload } from "jsonwebtoken";
 import { TFollowPayload } from "./follow.interface";
-import { Booking } from "./booking.model";
 import User from "../users/user.model";
 import AppError from "../../error/AppError";
 import httpStatus from "http-status";
@@ -88,24 +86,7 @@ const followUser = async (payload: TFollowPayload) => {
   }
 };
 
-const getMyBookings = async (userInfo: JwtPayload) => {
-  const bookingUserData = await User.findOne({ email: userInfo?.email });
-
-  const result = await Booking.find({ user: bookingUserData?._id })
-    .populate("user")
-    .populate("carId");
-
-  return result;
-};
-const getMySingleBooking = async (id: string) => {
-  const result = await Booking.findById(id).populate("user").populate("carId");
-
-  return result;
-};
-
 export const followServices = {
   followUser,
-  getMyBookings,
   userToFollow,
-  getMySingleBooking,
 };

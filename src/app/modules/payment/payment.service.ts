@@ -1,13 +1,13 @@
+import User from "../users/user.model";
 import { TPayment } from "./payment.interface";
 import { Payment } from "./payment.model";
-import { Booking } from "../follow/booking.model";
 import { initiatePayment } from "./payment.utils";
 
 const createPaymentIntoDB = async (payload: TPayment) => {
   //update the payment status to paid
-  await Booking.findByIdAndUpdate(
-    payload.bookingId,
-    { payment: "paid" },
+  await User.findByIdAndUpdate(
+    payload.id,
+    { isPremiumMember: true },
     { new: true }
   );
 
@@ -17,8 +17,6 @@ const createPaymentIntoDB = async (payload: TPayment) => {
   const paymentData = {
     name: payload.name,
     email: payload.email,
-    phone: payload.phone,
-    address: payload.address,
     totalCost: payload.totalCost,
     transactionId,
   };
