@@ -9,6 +9,7 @@ router.get("/:id", postControllers.getSinglePost);
 router.patch("/upVote", postControllers.upVotePost);
 router.patch("/downVote", postControllers.downVotePost);
 router.put("/comment", postControllers.commentOnPost);
+router.patch("/edit-comment", postControllers.editComment);
 router.patch("/:id", postControllers.updatePost);
 router.delete("/:id", postControllers.deletePost);
 

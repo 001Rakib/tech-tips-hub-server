@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import AppError from "../../error/AppError";
-import { ICommentPayload, IVotePayload, TPost } from "./post.interface";
+import {
+  ICommentPayload,
+  IEditCommentPayload,
+  IVotePayload,
+  TPost,
+} from "./post.interface";
 import Post from "./post.model";
 import { QueryBuilder } from "../../builder/QueryBuilder";
 import { PostSearchableFields } from "./post.constant";
@@ -202,6 +207,62 @@ const commentOnPost = async (payload: ICommentPayload) => {
   }
 };
 
+const editCommentOnPost = async (payload: IEditCommentPayload) => {
+  const { user, comment, commentId, postId } = payload;
+
+  try {
+    // Validate that the payload has the required fields
+    if (!user || !comment || !commentId) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Required parameters missing");
+    }
+
+    // Ensure user and commentId are valid ObjectIds
+    if (!Types.ObjectId.isValid(user) || !Types.ObjectId.isValid(commentId)) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Invalid User ID or Comment ID"
+      );
+    }
+
+    // Convert user and commentId to ObjectId
+    const userObjectId = new Types.ObjectId(user);
+    const commentObjectId = new Types.ObjectId(commentId);
+
+    // Retrieve the post by postId and ensure it exists
+    const post = await Post.findById(postId).select("comments");
+
+    if (!post) {
+      throw new AppError(httpStatus.NOT_FOUND, "Post Not Found");
+    }
+
+    // Find the comment to be updated in the post's comments array
+    const commentToEdit = post.comments.find(
+      (c) => c._id!.equals(commentObjectId) && c.user.equals(userObjectId)
+    );
+
+    if (!commentToEdit) {
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        "Comment Not Found or User Unauthorized"
+      );
+    }
+
+    // Update the comment content
+    commentToEdit.comment = comment;
+    commentToEdit.updatedAt = new Date();
+
+    // Save the updated post document
+    const updatedPost = await post.save();
+
+    return updatedPost.comments; // Return the updated comments array
+  } catch (error: any) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      error.message || "An error occurred"
+    );
+  }
+};
+
 const deletePostFromDB = async (id: string) => {
   //check if the car available in the database
   const isPostExists = await Post.findById(id);
@@ -223,4 +284,5 @@ export const postServices = {
   upVotePostIntoDB,
   downVotePostIntoDB,
   commentOnPost,
+  editCommentOnPost,
 };

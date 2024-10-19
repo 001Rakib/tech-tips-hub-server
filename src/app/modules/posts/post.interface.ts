@@ -15,8 +15,15 @@ export interface ICommentPayload {
   user: Types.ObjectId;
   comment: string;
 }
+export interface IEditCommentPayload {
+  postId: Types.ObjectId;
+  commentId: Types.ObjectId;
+  user: Types.ObjectId;
+  comment: string;
+}
 
 interface IComment {
+  _id?: Types.ObjectId;
   user: Types.ObjectId;
   comment: string;
   vote?: Types.ObjectId[];
