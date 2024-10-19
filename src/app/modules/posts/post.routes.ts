@@ -11,6 +11,7 @@ router.patch("/downVote", postControllers.downVotePost);
 router.put("/comment", postControllers.commentOnPost);
 router.patch("/edit-comment", postControllers.editComment);
 router.patch("/:id", postControllers.updatePost);
+router.delete("/delete-comment", postControllers.deleteComment);
 router.delete("/:id", postControllers.deletePost);
 
 export const postRoutes = router;

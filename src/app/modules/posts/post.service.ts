@@ -263,6 +263,65 @@ const editCommentOnPost = async (payload: IEditCommentPayload) => {
   }
 };
 
+const deleteComment = async (query: Record<string, unknown>) => {
+  try {
+    // Validate that the payload has the required fields
+    if (!query.user || !query.commentId || !query.postId) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Required parameters missing");
+    }
+
+    // Ensure postId, commentId, and user are valid ObjectIds
+    if (!Types.ObjectId.isValid(query.postId as string)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid Post ID");
+    }
+
+    if (!Types.ObjectId.isValid(query.commentId as string)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid Comment ID");
+    }
+
+    if (!Types.ObjectId.isValid(query.user as string)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid User ID");
+    }
+
+    // Convert to ObjectId
+    const postObjectId = new Types.ObjectId(query.postId as string);
+    const commentObjectId = new Types.ObjectId(query.commentId as string);
+    const userObjectId = new Types.ObjectId(query.user as string);
+
+    // Retrieve the post by postId and ensure it exists
+    const post = await Post.findById(postObjectId).select("comments");
+
+    if (!post) {
+      throw new AppError(httpStatus.NOT_FOUND, "Post Not Found");
+    }
+
+    // Find the comment to be deleted in the post's comments array
+    const commentIndex = post.comments.findIndex(
+      (c) => c._id!.equals(commentObjectId) && c.user.equals(userObjectId)
+    );
+
+    if (commentIndex === -1) {
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        "Comment Not Found or User Unauthorized"
+      );
+    }
+
+    // Remove the comment from the post's comments array
+    post.comments.splice(commentIndex, 1);
+
+    // Save the updated post document
+    await post.save();
+
+    return { message: "Comment deleted successfully" };
+  } catch (error: any) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      error.message || "An error occurred"
+    );
+  }
+};
+
 const deletePostFromDB = async (id: string) => {
   //check if the car available in the database
   const isPostExists = await Post.findById(id);
@@ -285,4 +344,5 @@ export const postServices = {
   downVotePostIntoDB,
   commentOnPost,
   editCommentOnPost,
+  deleteComment,
 };

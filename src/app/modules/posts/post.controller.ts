@@ -79,6 +79,15 @@ const editComment = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const deleteComment = catchAsync(async (req, res) => {
+  const result = await postServices.deleteComment(req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Comment deleted successfully",
+    data: result,
+  });
+});
 const deletePost = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await postServices.deletePostFromDB(id);
@@ -100,4 +109,5 @@ export const postControllers = {
   downVotePost,
   commentOnPost,
   editComment,
+  deleteComment,
 };
