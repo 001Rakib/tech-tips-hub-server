@@ -3,7 +3,6 @@ import validateRequest from "../../middleware/validateRequest";
 import { userValidationSchema } from "./user.validation";
 import { userControllers } from "./user.controllers";
 import { authValidation } from "../auth/auth.validation";
-import auth from "../../middleware/auth";
 
 const router = Router();
 
@@ -15,16 +14,16 @@ router.post(
 router.post("/login", userControllers.signInUser);
 router.patch(
   "/user/change-password",
-  auth("admin", "user"),
+
   userControllers.changePassword
 );
-router.get("/user", auth("user", "admin"), userControllers.getAllUser);
+router.get("/user", userControllers.getAllUser);
 router.get("/user/:id", userControllers.getUser);
-router.patch("/user/:id", auth("user", "admin"), userControllers.updateUser);
-router.delete("/user/:id", auth("user", "admin"), userControllers.deleteUser);
+router.patch("/user/:id", userControllers.updateUser);
+router.delete("/user/:id", userControllers.deleteUser);
 router.patch(
   "/user/status/:id",
-  auth("admin"),
+
   userControllers.updateUserStatus
 );
 
