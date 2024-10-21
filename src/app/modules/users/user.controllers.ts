@@ -76,7 +76,7 @@ const updateUserStatus = catchAsync(async (req, res) => {
 const changePassword = catchAsync(async (req, res) => {
   const { ...passwordData } = req.body;
 
-  const result = await userServices.changePassword(req.user, passwordData);
+  const result = await userServices.changePassword(passwordData);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

@@ -146,12 +146,13 @@ const updateUserStatus = async (id: string, payload: Partial<TUser>) => {
   }
 };
 //change password
-const changePassword = async (
-  user: JwtPayload,
-  payload: { oldPassword: string; newPassword: string }
-) => {
+const changePassword = async (payload: {
+  oldPassword: string;
+  newPassword: string;
+  id: string;
+}) => {
   //check if the user is registered in the database
-  const userData = await User.findById(user._id).select("password");
+  const userData = await User.findById(payload.id).select("password");
   if (!userData) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -174,7 +175,7 @@ const changePassword = async (
 
   //update the password in the database
   await User.findOneAndUpdate(
-    { _id: user._id },
+    { _id: payload.id },
     { password: newHashedPassword }
   );
 
