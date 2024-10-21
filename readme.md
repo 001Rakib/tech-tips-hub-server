@@ -1,26 +1,16 @@
-# Car Rental Reservation Server
-
-Car rental reservation Server is about to keep track of cars and manage customer rentals and manage total cost and car return.
+# NextGen Tech Tips
 
 ## Live Deployment Link
 
-- [Car Rental Reservation Server](https://car-rental-reservation.vercel.app/)
+- [NextGen Tech Tips - Server](https://a6-tech-tips-server.vercel.app/)
 
 ## Features
 
-### Admin Actions:
-
-- Car Management: Admins can create new car entries in the system, specifying details like name, color, features, etc. They can also update existing car information to keep things accurate. Additionally, admins can perform "soft deletes" on cars that are no longer available for rent. This keeps a record of the car but removes it from active listings.
-
-- Booking Oversight: Admins have a comprehensive view of all ongoing and past bookings within the system. This allows them to monitor rental activity and identify any potential issues.
-
-- Ride Cost Calculation: For completed rentals (where the end time has been entered by admin), admins can calculate the total cost using startTime , endTime and pricePerHour to ensure accurate billing.
-
-### User’s Actions:
-
-- Book a Ride: Users can select their pick-up entering carId and startTime to book the perfect car for their needs.
-
-- Rental History: They can easily access their booking history, allowing them to review past rentals.
+- **User Authentication**: Secure registration and login with JWT-based authentication.
+- **Upvote & Downvote System**: Rate posts and comments based on quality and relevance.
+- **Commenting System**: Engage in discussions through comments on posts.
+- **Payment Integration**: Seamless integration with Aamarpay for premium subscriptions.
+- **Search & Filter**: Advanced search functionality with debouncing for optimal performance.
 
 ## Technology Used
 
@@ -73,38 +63,30 @@ Start the server
 
 **Route**: `/api/auth/signin`(**POST**)
 
-### 3\. Create a Car (Only accessible to the Admin)
+### 3\. Create Post
 
-**Route**: `/api/cars`(**POST**)
+**Route**: `/api/posts`(**POST**)
 
-### 4\. Get All Cars
+### 4\. Get All Posts
 
-**Route**: `/api/cars`(**GET**)
+**Route**: `/api/posts`(**GET**)
 
-### 5\. Get A Car
+### 5\. Get A Post
 
-**Route**: `/api/cars/:id`(**GET**)
+**Route**: `/api/posts/:id`(**GET**)
 
-### 6\. Update A Car (Only Accessible to the Admin)
+### 6\. Update A Post
 
-**Route:** `/api/cars/:id`(**PUT**)
+**Route:** `/api/posts/:id`(**PATCH**)
 
-### 7\. Delete A Car (Only Accessible to the Admin)
+### 7\. Delete A Post
 
-**Route:** `/api/cars/:id`(**DELETE**) \[SOFT DELETE\]
+**Route:** `/api/posts/:id`(**DELETE**)
 
-### 8\. Get All Bookings (Accessible to the Admin)
+### 8\. Get All Users (Accessible to the Admin)
 
-**Route:** `/api/bookings`(**GET**)
+**Route:** `/api/auth/users`(**GET**)
 
-### 9\. Book a Car (Only Accessible to the User)
+### 9\. Delete a User (Only Accessible to the User)
 
-**Route:** `/api/bookings`(**POST**)
-
-### 10\. Get User's Bookings (Only Accessible To the User)
-
-**Route:** `/api/bookings/my-bookings`(**GET**)
-
-## 11\. Return The Car (Only Accessible To Admin)
-
-**Route:** `/api/cars/return`(PUT)
+**Route:** `/api/auth/user/:id`(**POST**)
